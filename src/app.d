@@ -36,8 +36,6 @@ interface IMyAPI
 
 class API : IMyAPI
 {
-	private Resource[] _resources;
-
 	Resource addResource(Resource resource) {
 		auto coll = client.getCollection("app.resource");
 		coll.insert(resource);
