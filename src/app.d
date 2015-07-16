@@ -4,16 +4,14 @@ import std.algorithm;
 
 MongoClient client;
 
-void index(HTTPServerRequest req, HTTPServerResponse res)
-{
-	res.render!("index.dt", req);
-}
-
 shared static this()
 {
 	client = connectMongoDB("127.0.0.1");
 	auto router = new URLRouter;
-	router.get("/", &index);
+	router.get("/", (req, res)
+	{
+		res.render!("index.dt", req);
+	});
 	registerRestInterface!IMyAPI(router, new API(), "/api/");
 	auto settings = new HTTPServerSettings;
 	settings.port = 9000;
