@@ -20,46 +20,50 @@ shared static this()
 
 interface IMyAPI
 {
-	@path("resource") @method(HTTPMethod.POST)
-	Resource addResource(Resource resource);
+	@path("person") @method(HTTPMethod.POST)
+	Person addPerson(Person person);
 	
-	@path("resource") @method(HTTPMethod.GET)
-  	Resource[] getResource();
+	@path("person") @method(HTTPMethod.GET)
+  	Person[] getPerson();
   	
-	@path("resource/:id") @method(HTTPMethod.GET)
-	Resource getResource(int _id);
+	@path("person/:id") @method(HTTPMethod.GET)
+	Person getPerson(int _id);
 	
-	@path("resource/:id") @method(HTTPMethod.DELETE)
-	void deleteResource(int _id);
+	@path("person/:id") @method(HTTPMethod.DELETE)
+	void deletePerson(int _id);
 }
 
 
 class API : IMyAPI
 {
-	Resource addResource(Resource resource) {
-		auto coll = client.getCollection("app.resource");
-		coll.insert(resource);
-		return resource;
+	private:
+	const string COLL = "app.person";
+	
+	public:
+	Person addPerson(Person person) {
+		auto coll = client.getCollection(COLL);
+		coll.insert(person);
+		return person;
 	}
 
-	Resource[] getResource() {
-		auto coll = client.getCollection("app.resource");
-		return coll.find().map!(doc => deserialize!(BsonSerializer, Resource)(doc)).array;
+	Person[] getPerson() {
+		auto coll = client.getCollection(COLL);
+		return coll.find().map!(doc => deserialize!(BsonSerializer, Person)(doc)).array;
 	}
 
-	Resource getResource(int id) {
-		auto coll = client.getCollection("app.resource");
+	Person getPerson(int id) {
+		auto coll = client.getCollection(COLL);
 		auto doc = coll.findOne(["id":id]);
-		return deserialize!(BsonSerializer, Resource)(doc);
+		return deserialize!(BsonSerializer, Person)(doc);
 	}
 
-	void deleteResource(int id) {
-		auto coll = client.getCollection("app.resource");
+	void deletePerson(int id) {
+		auto coll = client.getCollection(COLL);
 		coll.remove(["id": id] );
 	}
 }
 
-struct Resource {
+struct Person {
 	ulong id;
 	string firstName;
 	string lastName;
