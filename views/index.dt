@@ -1,15 +1,70 @@
 doctype html
-html
+html(ng-app="myApp")
+  title Example app with Angular + DLang rest server
   script(src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js")
   body
-    p Persons
-    div(ng-app="myApp", ng-controller="personsCtrl")
+    h1 Persons
+    h2 Add new person
+    form(ng-controller="formCtrl", ng-submit="submitForm()")
+      | Id:
+      br
+      input(type="number", ng-model="form.person.id")
+      br
+      br
+      | First name:
+      br
+      input(type="text", ng-model="form.person.firstName")
+      br
+      br
+      | Last name:
+      br
+      input(type="text", ng-model="form.person.lastName")
+      br
+      br
+      input(type="submit", ngclick="Submit")
+    h2 List of persons
+    div(ng-controller="personsCtrl")
       ul
         li(ng-repeat="p in persons")
-          |{{ p.firstName + " " + p.lastName }}
+          {{ p.firstName + " " + p.lastName }}
+          a(href="#", ng-click="delete(p.id)") X
     script.
       var app = angular.module('myApp', []);
       app.controller('personsCtrl', function($scope, $http) {
-      	$http.get("/api/person").success(function(response) {$scope.persons = response;});
+      	  var getPersons = function() {
+              $http.get("/api/person").success(function(response) {
+                  $scope.persons = response;
+              });
+          };
+          
+          $scope.delete = function(id) {
+              $http.delete("/api/person/" + id).success(function(response) {
+                  getPersons();
+              });
+          };
+          
+          $scope.$on("newPersonAdded", function () {
+              getPersons();
+          });
+          
+          getPersons();
+      });
+      app.controller('formCtrl', function ($scope, $http) {
+        $scope.form = {
+        	person: {
+                id: 1,
+                firstName: "default",
+                lastName: "default"
+            }
+        };
+        $scope.submitForm = function() {
+            $http({
+                url: "/api/person",
+                data: $scope.form,
+                method: 'POST'
+            }).success(function(data){
+                $scope.$root.$broadcast("newPersonAdded");
+            }).error(function(err){"ERR", console.log(err)})
+        };
       });
     .

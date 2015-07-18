@@ -2,19 +2,21 @@ import vibe.d;
 import std.stdio;
 import std.algorithm;
 
-MongoClient client;
-
 shared static this()
 {
-	client = connectMongoDB("127.0.0.1");
+	auto client = connectMongoDB("127.0.0.1");
+	
 	auto router = new URLRouter;
 	router.get("/", (req, res)
 	{
 		res.render!("index.dt", req);
 	});
-	registerRestInterface!IMyAPI(router, new API(), "/api/");
+	
+	registerRestInterface!IMyAPI(router, new API(client), "/api/");
+	
 	auto settings = new HTTPServerSettings;
 	settings.port = 9000;
+	
 	listenHTTP(settings, router);
 }
 
@@ -36,8 +38,13 @@ interface IMyAPI
 
 class API : IMyAPI
 {
+	this(MongoClient _client) {
+		this.client = _client;
+	}
+	
 	private:
-	const string COLL = "app.person";
+	MongoClient client;
+	string COLL = "app.person";
 	
 	public:
 	Person addPerson(Person person) {
