@@ -73,11 +73,6 @@ class API : IAPI
 }
 
 struct PersonObj {
-	this(PersonDoc doc) {
-		id = doc.id;
-		firstName = doc.firstName;
-		lastName = doc.lastName;
-	}
 	ulong id;
 	string firstName;
 	string lastName;
