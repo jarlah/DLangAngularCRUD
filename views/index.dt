@@ -51,7 +51,7 @@ html(ng-app="myApp")
       });
       app.controller('formCtrl', function ($scope, $http) {
         $scope.form = {
-        	person: {
+            person: {
                 id: 1,
                 firstName: "default",
                 lastName: "default"
