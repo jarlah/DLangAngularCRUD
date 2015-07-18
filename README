@@ -1,1 +1,1 @@
-As the title says
+An app that is built on DUB. Service layer and view rendering is handled by Vibe.d and client side rendering and retrieving and posting is done with Angular
