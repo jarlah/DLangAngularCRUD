@@ -44,7 +44,7 @@ class API : IMyAPI
 
 	Resource[] getResource() {
 		auto coll = client.getCollection("app.resource");
-		return array(coll.find().map!(doc => deserialize!(BsonSerializer, Resource)(doc)));
+		return coll.find().map!(doc => deserialize!(BsonSerializer, Resource)(doc)).array;
 	}
 
 	Resource getResource(int id) {
