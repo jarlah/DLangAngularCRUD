@@ -23,16 +23,19 @@ shared static this()
 interface IAPI
 {
 	@path("person") @method(HTTPMethod.POST)
-	void addPerson(Person person);
+	void addPerson(PersonObj person);
+	
+	@path("person/:id") @method(HTTPMethod.PUT)
+	void updatePerson(PersonObj person, string _id);
 	
 	@path("person") @method(HTTPMethod.GET)
-  	Person[] getPerson();
+  	PersonDoc[] getPerson();
   	
 	@path("person/:id") @method(HTTPMethod.GET)
-	Person getPerson(int _id);
+	PersonDoc getPerson(string _id);
 	
 	@path("person/:id") @method(HTTPMethod.DELETE)
-	void deletePerson(int _id);
+	void deletePerson(string _id);
 }
 
 
@@ -46,24 +49,42 @@ class API : IAPI
 	MongoCollection coll;
 	
 	public:
-	void addPerson(Person person) {
+	void addPerson(PersonObj person) {
 		coll.insert(person);
 	}
-
-	Person[] getPerson() {
-		return coll.find().map!(doc => deserialize!(BsonSerializer, Person)(doc)).array;
+	
+	void updatePerson(PersonObj person, string _id) {
+		auto query = Bson.emptyObject;
+		query["$set"] = serializeToBson(person);
+		coll.update(["_id": Bson(BsonObjectID.fromString(_id))], query);
 	}
 
-	Person getPerson(int id) {
-		return deserialize!(BsonSerializer, Person)(coll.findOne(["id":id]));
+	PersonDoc[] getPerson() {
+		return coll.find().map!(doc => deserialize!(BsonSerializer, PersonDoc)(doc)).array;
 	}
 
-	void deletePerson(int id) {
-		coll.remove(["id": id] );
+	PersonDoc getPerson(string id) {
+		return deserialize!(BsonSerializer, PersonDoc)(coll.findOne(["_id":id]));
+	}
+
+	void deletePerson(string id) {
+		coll.remove(["_id": BsonObjectID.fromString(id)] );
 	}
 }
 
-struct Person {
+struct PersonObj {
+	this(PersonDoc doc) {
+		id = doc.id;
+		firstName = doc.firstName;
+		lastName = doc.lastName;
+	}
+	ulong id;
+	string firstName;
+	string lastName;
+}
+
+struct PersonDoc {
+	BsonObjectID _id;
 	ulong id;
 	string firstName;
 	string lastName;
