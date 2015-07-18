@@ -12,7 +12,7 @@ shared static this()
 		res.render!("index.dt", req);
 	});
 	
-	registerRestInterface!IMyAPI(router, new API(client), "/api/");
+	registerRestInterface!IAPI(router, new API(client), "/api/");
 	
 	auto settings = new HTTPServerSettings;
 	settings.port = 9000;
@@ -20,10 +20,10 @@ shared static this()
 	listenHTTP(settings, router);
 }
 
-interface IMyAPI
+interface IAPI
 {
 	@path("person") @method(HTTPMethod.POST)
-	Person addPerson(Person person);
+	void addPerson(Person person);
 	
 	@path("person") @method(HTTPMethod.GET)
   	Person[] getPerson();
@@ -36,36 +36,29 @@ interface IMyAPI
 }
 
 
-class API : IMyAPI
+class API : IAPI
 {
 	this(MongoClient _client) {
-		this.client = _client;
+		this.coll = _client.getCollection("app.person");
 	}
 	
 	private:
-	MongoClient client;
-	string COLL = "app.person";
+	MongoCollection coll;
 	
 	public:
-	Person addPerson(Person person) {
-		auto coll = client.getCollection(COLL);
+	void addPerson(Person person) {
 		coll.insert(person);
-		return person;
 	}
 
 	Person[] getPerson() {
-		auto coll = client.getCollection(COLL);
 		return coll.find().map!(doc => deserialize!(BsonSerializer, Person)(doc)).array;
 	}
 
 	Person getPerson(int id) {
-		auto coll = client.getCollection(COLL);
-		auto doc = coll.findOne(["id":id]);
-		return deserialize!(BsonSerializer, Person)(doc);
+		return deserialize!(BsonSerializer, Person)(coll.findOne(["id":id]));
 	}
 
 	void deletePerson(int id) {
-		auto coll = client.getCollection(COLL);
 		coll.remove(["id": id] );
 	}
 }

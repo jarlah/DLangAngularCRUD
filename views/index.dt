@@ -5,7 +5,7 @@ html(ng-app="myApp")
   body
     h1 Persons
     h2 Add new person
-    form(ng-controller="formCtrl", ng-submit="submitForm()")
+    form(name="personForm", ng-controller="formCtrl", ng-submit="submitForm()")
       | Id:
       br
       input(type="number", ng-model="form.person.id")
@@ -31,7 +31,7 @@ html(ng-app="myApp")
     script.
       var app = angular.module('myApp', []);
       app.controller('personsCtrl', function($scope, $http) {
-      	  var getPersons = function() {
+          var getPersons = function() {
               $http.get("/api/person").success(function(response) {
                   $scope.persons = response;
               });
@@ -50,13 +50,16 @@ html(ng-app="myApp")
           getPersons();
       });
       app.controller('formCtrl', function ($scope, $http) {
-        $scope.form = {
+        var blankPerson = function() {
+          return {
             person: {
-                id: 1,
-                firstName: "default",
-                lastName: "default"
+              id: undefined,
+              firstName: undefined,
+              lastName: undefined
             }
+          };
         };
+        $scope.form = blankPerson();
         $scope.submitForm = function() {
             $http({
                 url: "/api/person",
@@ -64,6 +67,7 @@ html(ng-app="myApp")
                 method: 'POST'
             }).success(function(data){
                 $scope.$root.$broadcast("newPersonAdded");
+                $scope.form = blankPerson();
             }).error(function(err){"ERR", console.log(err)})
         };
       });
