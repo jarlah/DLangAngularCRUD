@@ -1,0 +1,31 @@
+doctype html
+html(ng-app="myApp")
+  title Example app with Angular + DLang rest server
+  script(src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js")
+  body
+    h1 Persons
+    form(name="personForm", ng-controller="formCtrl", ng-submit="submitForm()")
+      div(ng-if="form.person._id")
+        | Mongo Id: 
+        {{form.person._id}}
+        br
+      | Person Id:
+      br
+      input(type="number", ng-model="form.person.id")
+      br
+      | First name:
+      br
+      input(type="text", ng-model="form.person.firstName")
+      br
+      | Last name:
+      br
+      input(type="text", ng-model="form.person.lastName")
+      br
+      input(type="submit", ngclick="Submit")
+    div(ng-controller="personsCtrl")
+      ul
+        li(ng-repeat="p in persons")
+          {{ p.firstName + " " + p.lastName }}
+          a(href="#", ng-click="delete(p._id)") Delete
+          a(href="#", ng-click="edit(p)") Edit
+    script(src="angular.js")

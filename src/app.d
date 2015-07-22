@@ -11,9 +11,16 @@ shared static this()
 	{
 		res.render!("index.dt", req);
 	});
-	
+	router.get("/reactjs", (req, res)
+	{
+		res.render!("reactjs.dt", req);
+	});
+	router.get("/angular", (req, res)
+	{
+		res.render!("angular.dt", req);
+	});
 	registerRestInterface!IAPI(router, new API(client), "/api/");
-	
+	router.get("*", serveStaticFiles("public/"));
 	auto settings = new HTTPServerSettings;
 	settings.port = 9000;
 	
@@ -23,7 +30,7 @@ shared static this()
 interface IAPI
 {
 	@path("person") @method(HTTPMethod.POST)
-	void addPerson(PersonObj person);
+	PersonDoc[] addPerson(PersonObj person);
 	
 	@path("person/:id") @method(HTTPMethod.PUT)
 	void updatePerson(PersonObj person, string _id);
@@ -49,8 +56,9 @@ class API : IAPI
 	MongoCollection coll;
 	
 	public:
-	void addPerson(PersonObj person) {
+	PersonDoc[] addPerson(PersonObj person) {
 		coll.insert(person);
+		return getPerson();
 	}
 	
 	void updatePerson(PersonObj person, string _id) {
