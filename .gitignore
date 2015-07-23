@@ -3,3 +3,4 @@ node_modules
 rest-server
 .dub
 .dlang*
+app/js/bundle.js
