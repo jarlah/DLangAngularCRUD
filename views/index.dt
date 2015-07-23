@@ -7,3 +7,5 @@ html
       a(href="angular") Angular
     div
       a(href="reactjs") React JS
+    div
+      a(href="flux") React JS + Flux

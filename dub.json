@@ -8,5 +8,8 @@
 	"dependencies": {
 		"vibe-d": "~>0.7.23"
 	},
-	"versions": ["VibeDefaultMain"]
+	"versions": ["VibeDefaultMain"],
+	"postBuildCommands": [
+		"export NODE_ENV=production; npm run-script build"
+	]
 }

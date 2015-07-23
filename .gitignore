@@ -1,0 +1,5 @@
+public/bundle.min.js
+node_modules
+rest-server
+.dub
+.dlang*

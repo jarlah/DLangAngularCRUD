@@ -15,6 +15,10 @@ shared static this()
 	{
 		res.render!("reactjs.dt", req);
 	});
+	router.get("/flux", (req, res)
+	{
+		res.render!("flux.dt", req);
+	});
 	router.get("/angular", (req, res)
 	{
 		res.render!("angular.dt", req);
@@ -23,12 +27,11 @@ shared static this()
 	router.get("*", serveStaticFiles("public/"));
 	auto settings = new HTTPServerSettings;
 	settings.port = 9000;
-	
 	listenHTTP(settings, router);
 }
 
 interface IAPI
-{
+{ 
 	@path("person") @method(HTTPMethod.POST)
 	PersonDoc[] addPerson(PersonObj person);
 	
