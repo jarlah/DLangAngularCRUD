@@ -31,7 +31,8 @@ shared static this()
 }
 
 interface IAPI
-{ 
+{
+	// Person
 	@path("person") @method(HTTPMethod.POST)
 	PersonDoc[] addPerson(PersonObj person);
 	
@@ -46,46 +47,88 @@ interface IAPI
 	
 	@path("person/:id") @method(HTTPMethod.DELETE)
 	void deletePerson(string _id);
+	
+	// Contact
+	@path("contact") @method(HTTPMethod.POST)
+	void addContact(ContactObj contact);
+	
+	@path("contact/:id") @method(HTTPMethod.PUT)
+	void updateContact(ContactObj contact, string _id);
+	
+	@path("contact") @method(HTTPMethod.GET)
+  	ContactDoc[] getContact();
+  	 
+	@path("contact/:id") @method(HTTPMethod.GET)
+	ContactDoc getContact(string _id);
+	
+	@path("contact/:id") @method(HTTPMethod.DELETE)
+	void deleteContact(string _id);
 }
 
 
 class API : IAPI
 {
 	this(MongoClient _client) {
-		this.coll = _client.getCollection("app.person");
+		this.personColl = _client.getCollection("app.person");
+		this.contactColl = _client.getCollection("app.contact");
 	}
 	
 	private:
-	MongoCollection coll;
+	MongoCollection personColl;
+	MongoCollection contactColl;
 	
 	public:
+	// Person
 	PersonDoc[] addPerson(PersonObj person) {
-		coll.insert(person);
+		personColl.insert(person);
 		return getPerson();
 	}
 	
 	void updatePerson(PersonObj person, string _id) {
 		auto query = Bson.emptyObject;
 		query["$set"] = serializeToBson(person);
-		coll.update(["_id": Bson(BsonObjectID.fromString(_id))], query);
+		personColl.update(["_id": Bson(BsonObjectID.fromString(_id))], query);
 	}
 
 	PersonDoc[] getPerson() {
-		return coll.find().map!(doc => deserialize!(BsonSerializer, PersonDoc)(doc)).array;
+		return personColl.find().map!(doc => deserialize!(BsonSerializer, PersonDoc)(doc)).array;
 	}
 
 	PersonDoc getPerson(string id) {
-		return deserialize!(BsonSerializer, PersonDoc)(coll.findOne(["_id":id]));
+		return deserialize!(BsonSerializer, PersonDoc)(personColl.findOne(["_id":id]));
 	}
 
 	void deletePerson(string id) {
-		coll.remove(["_id": BsonObjectID.fromString(id)] );
+		personColl.remove(["_id": BsonObjectID.fromString(id)] );
+	}
+	
+	// Contact
+	void addContact(ContactObj contact) {
+		contactColl.insert(contact);
+	}
+	
+	void updateContact(ContactObj contact, string _id) {
+		auto query = Bson.emptyObject;
+		query["$set"] = serializeToBson(contact);
+		contactColl.update(["_id": Bson(BsonObjectID.fromString(_id))], query);
+	}
+
+	ContactDoc[] getContact() {
+		return contactColl.find().map!(doc => deserialize!(BsonSerializer, ContactDoc)(doc)).array;
+	}
+
+	ContactDoc getContact(string id) {
+		return deserialize!(BsonSerializer, ContactDoc)(contactColl.findOne(["_id":id]));
+	}
+
+	void deleteContact(string id) {
+		contactColl.remove(["_id": BsonObjectID.fromString(id)] );
 	}
 }
 
 struct PersonObj {
 	ulong id;
-	string firstName;
+	string firstName; 
 	string lastName;
 }
 
@@ -95,3 +138,18 @@ struct PersonDoc {
 	string firstName;
 	string lastName;
 }
+
+struct ContactObj {
+	string name; 
+	string phone;
+	string email;
+	string avatar;
+}
+
+struct ContactDoc {
+	BsonObjectID _id;
+	string name;
+	string phone;
+	string email;
+	string avatar;
+} 

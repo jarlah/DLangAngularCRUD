@@ -23,8 +23,6 @@ function getContactsState() {
 
 var CMApp = React.createClass({
   getInitialState: function() {
-    // loading existing data
-    this._initializeContacts();
     return getContactsState();
   },
   componentDidMount: function() {
@@ -35,13 +33,13 @@ var CMApp = React.createClass({
   },
 	render: function() {
     // request to edit a specific contact from store
-    var editId = this.state.editContact.id;
+    var editId = this.state.editContact._id;
     var editContact = this.state.editContact;
     if (editId !== undefined) {
       $('#edit_contact_modal').openModal();
 
       // fill form elements with selected contact info
-      $('#edit_contact_form').find('#contact_id').val(editContact.id);
+      $('#edit_contact_form').find('#contact_id').val(editContact._id);
       $('#edit_contact_form').find('#contact_name').val(editContact.name);
       $('#edit_contact_form').find('#contact_phone').val(editContact.phone);
       $('#edit_contact_form').find('#contact_email').val(editContact.email);
@@ -56,7 +54,7 @@ var CMApp = React.createClass({
 
       // changing back to undefined so it prevent from opening the modal-
       // everytime the view is rendering
-      this.state.editContact.id = undefined;
+      this.state.editContact._id = undefined;
     }
     // main block
     return(
@@ -74,55 +72,6 @@ var CMApp = React.createClass({
   */
   _onChange: function() {
     this.setState(getContactsState());
-
-  },
-  _initializeContacts: function() {
-    // loading imaginary contacts
-    // can also be loaded from a remote server
-    var contacts = [
-            {
-              id: 1,
-              name : 'Terrence S. Hatfield',
-              phone: '651-603-1723',
-              email: 'TerrenceSHatfield@rhyta.com'
-            },
-            {
-              id: 2,
-              name : 'Chris M. Manning',
-              phone: '513-307-5859',
-              email: 'ChrisMManning@dayrep.com'
-            },
-            {
-              id: 3,
-              name : 'Ricky M. Digiacomo',
-              phone: '918-774-0199',
-              email: 'RickyMDigiacomo@teleworm.us'
-            },
-            {
-              id: 4,
-              name : 'Michael K. Bayne',
-              phone: '702-989-5145',
-              email: 'MichaelKBayne@rhyta.com'
-            },
-            {
-              id: 5,
-              name : 'John I. Wilson',
-              phone: '318-292-6700',
-              email: 'JohnIWilson@dayrep.com'
-            },
-            {
-              id: 6,
-              name : 'Rodolfo P. Robinett',
-              phone: '803-557-9815',
-              email: 'RodolfoPRobinett@jourrapide.com'
-            }
-          ];
-
-        // looping through loaded contacts to create them individually
-        // sending action
-        contacts.forEach(function(obj) {
-        	CMActions.create(obj);
-        });
   }
 
 });

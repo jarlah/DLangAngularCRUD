@@ -27,7 +27,7 @@ var CMActions = {
   edit: function(contact) {
     AppDispatcher.dispatch({
       actionType: CMConstants.CM_EDIT,
-      id: contact.id,
+      _id: contact._id,
       name: contact.name,
       phone: contact.phone,
       email: contact.email,
@@ -40,7 +40,7 @@ var CMActions = {
   save: function(contact) {
     AppDispatcher.dispatch({
       actionType: CMConstants.CM_SAVE,
-      id: contact.id,
+      _id: contact._id,
       name: contact.name,
       phone: contact.phone,
       email: contact.email,
@@ -54,7 +54,7 @@ var CMActions = {
   remove: function(removeId) {
     AppDispatcher.dispatch({
       actionType: CMConstants.CM_REMOVE,
-      id: removeId
+      _id: removeId
     });
   }
 

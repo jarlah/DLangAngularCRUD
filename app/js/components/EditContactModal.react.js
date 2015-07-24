@@ -44,8 +44,7 @@ var EditContactModal = React.createClass({
 		var contact = {};
 		var form = $('#edit_contact_form');
 		
-		// getting data from form
-		contact.id = form.find('#contact_id').val();
+		contact._id = form.find('#contact_id').val();
 		contact.avatar = form.find('#contact_avatar').val();
 		contact.name = form.find('#contact_name').val();
 		contact.phone = form.find('#contact_phone').val();

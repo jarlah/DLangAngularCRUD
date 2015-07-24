@@ -3,7 +3,7 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var CMConstants = require('../constants/CMConstants');
 var assign = require('object-assign');
-
+var URL = 'api/contact';
 var CHANGE_EVENT = 'change';
 
 var _contacts = [];
@@ -14,20 +14,27 @@ var currentId = 0;
 
 // saving new contact
 function create(newContact) {
-  _contacts[currentId] = {
-    id: currentId,
-    name: newContact.name,
-    phone: newContact.phone,
-    email: newContact.email,
-    avatar: newContact.avatar
-  };
-  currentId+=1;
+	delete newContact.actionType;
+	$.ajax({
+	  url: URL,
+	  dataType: 'json',
+	  contentType:"application/json; charset=utf-8",
+	  type: 'POST',
+	  data: JSON.stringify({contact: newContact}),
+	  async:false,
+	  success: function(data) {
+	    // TODO
+	  }.bind(this),
+	  error: function(xhr, status, err) {
+	    console.error(URL, status, err.toString());
+	  }.bind(this)
+	});
 }
 
 // sending edit id to controller view
 function edit(contact) {
   _editContact = {
-    id: contact.id,
+    _id: contact._id,
     name: contact.name,
     phone: contact.phone,
     email: contact.email,
@@ -37,20 +44,40 @@ function edit(contact) {
 
 // saving edited contact
 function save(contact) {
-  _contacts[contact.id] = {
-    id: contact.id,
-    name: contact.name,
-    phone: contact.phone,
-    email: contact.email,
-    avatar: contact.avatar
-  };
+	var id = contact._id;
+	delete contact.actionType;
+	delete contact._id;
+	$.ajax({
+	  url: URL + '/' + id,
+	  dataType: 'json',
+	  contentType:"application/json; charset=utf-8",
+	  type: 'PUT',
+	  data: JSON.stringify({contact: contact}),
+	  async:false,
+	  success: function(data) {
+	    // TODO
+	  }.bind(this),
+	  error: function(xhr, status, err) {
+	    console.error(URL, status, err.toString());
+	  }.bind(this)
+	});
 }
 
 // removing contact by user
 function remove(removeId) {
-  if (_contacts.hasOwnProperty(removeId)) {
-    delete _contacts[removeId];
-  }
+	$.ajax({
+	  url: URL + '/' + removeId,
+	  dataType: 'json',
+	  contentType:"application/json; charset=utf-8",
+	  type: 'DELETE',
+	  async:false,
+	  success: function(data) {
+	    // TODO
+	  }.bind(this),
+	  error: function(xhr, status, err) {
+	    console.error(URL, status, err.toString());
+	  }.bind(this)
+	});
 }
 
 
@@ -62,8 +89,22 @@ var CMStore = assign({}, EventEmitter.prototype, {
   getEditContact: function() {
     return _editContact;
   },
+  
   getAll: function() {
-    return _contacts;
+	var theResponse = null;
+    $.ajax({
+      url: URL,
+      dataType: 'json',
+      cache: false,
+      async: false,
+      success: function(data) {
+        theResponse = data;
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(URL, status, err.toString());
+      }.bind(this)
+    });
+    return theResponse;
   },
 
   emitChange: function() {
@@ -109,7 +150,7 @@ AppDispatcher.register(function(action) {
       break;
 
     case CMConstants.CM_REMOVE:
-      remove(action.id);
+      remove(action._id);
       CMStore.emitChange();
       break;
 

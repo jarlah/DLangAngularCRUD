@@ -4,7 +4,6 @@ var CMActions = require('../actions/CMActions');
 var Contact = React.createClass({
 	render:function() {
 		var contact = this.props.contact;
-
 		// contact component ( for every contacts )
 		// used by ContactList.react.js
 		return(
