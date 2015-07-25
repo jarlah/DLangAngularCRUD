@@ -2,7 +2,6 @@ var React = require('react');
 var CMActions = require('../actions/CMActions');
 
 var EditContactModal = React.createClass({
-
 	render:function() {
 		return(
 			<div id="edit_contact_modal" className="modal">
@@ -12,12 +11,10 @@ var EditContactModal = React.createClass({
 						<div className="input-field">
 							<i className="mdi-action-account-circle prefix"></i>
 							<input id="contact_name" type="text" className="validate" />
-
 						</div>
 						<div className="input-field">
 							<i className="mdi-communication-phone prefix"></i>
 							<input id="contact_phone" type="tel" className="validate"/>
-
 						</div>
 						<div className="input-field">
 							<i className="mdi-communication-email prefix"></i>
@@ -28,7 +25,6 @@ var EditContactModal = React.createClass({
 					<input id="contact_avatar" type="hidden" />
 					<input type="submit" className="hidden-btn"/>
 				</form>
-
 				<div className="modal-footer">
 					<a onClick={this._saveContact} className="modal-action modal-close waves-effect waves-green btn-flat">Press enter or click here</a>
 					<a onClick={this._removeContact} className="red lighten-4 modal-action modal-close waves-effect waves-red btn-flat">delete contact</a>

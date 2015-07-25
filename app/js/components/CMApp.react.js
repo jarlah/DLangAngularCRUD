@@ -25,13 +25,22 @@ var CMApp = React.createClass({
   getInitialState: function() {
     return getContactsState();
   },
+  
   componentDidMount: function() {
-		CMStore.addChangeListener(this._onChange);
+	CMStore.on('save', this._onChange);
+	CMStore.on('remove', this._onChange);
+	CMStore.on('edit', this._onModal);
+	CMStore.on('create', this._onChange);
   },
+  
   componentWillUnmount: function() {
-    CMStore.removeChangeListener(this._onChange);
+	CMStore.off('save', this._onChange);
+	CMStore.off('remove', this._onChange);
+	CMStore.off('edit', this._onModal);
+	CMStore.off('create', this._onChange);
   },
-	render: function() {
+  
+  render: function() {
     // request to edit a specific contact from store
     var editId = this.state.editContact._id;
     var editContact = this.state.editContact;
@@ -51,7 +60,6 @@ var CMApp = React.createClass({
         $('#edit_contact_form').find('#contact_name').focus();
       },50);
       
-
       // changing back to undefined so it prevent from opening the modal-
       // everytime the view is rendering
       this.state.editContact._id = undefined;
@@ -64,16 +72,19 @@ var CMApp = React.createClass({
         <ContactModal />
         <EditContactModal editContact={this.state.editContact} />
       </ul>
-
     );
   },
-  /**
-  * Event handler for 'change' events coming from the CMStore
-  */
+  
   _onChange: function() {
     this.setState(getContactsState());
+  },
+  
+  _onModal: function() {
+	this.setState({
+	    allContacts: this.state.allContacts,
+	    editContact: CMStore.getEditContact()
+	});
   }
-
 });
 
 module.exports = CMApp;

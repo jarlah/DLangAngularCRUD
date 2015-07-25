@@ -4,7 +4,6 @@ var EventEmitter = require('events').EventEmitter;
 var CMConstants = require('../constants/CMConstants');
 var assign = require('object-assign');
 var URL = 'api/contact';
-var CHANGE_EVENT = 'change';
 
 var _contacts = [];
 var _editContact = {};
@@ -21,9 +20,8 @@ function create(newContact) {
 	  contentType:"application/json; charset=utf-8",
 	  type: 'POST',
 	  data: JSON.stringify({contact: newContact}),
-	  async:false,
 	  success: function(data) {
-	    // TODO
+	    CMStore.emit('create');
 	  }.bind(this),
 	  error: function(xhr, status, err) {
 	    console.error(URL, status, err.toString());
@@ -40,6 +38,7 @@ function edit(contact) {
     email: contact.email,
     avatar: contact.avatar
   };
+  CMStore.emit('edit');
 }
 
 // saving edited contact
@@ -53,9 +52,8 @@ function save(contact) {
 	  contentType:"application/json; charset=utf-8",
 	  type: 'PUT',
 	  data: JSON.stringify({contact: contact}),
-	  async:false,
 	  success: function(data) {
-	    // TODO
+		 CMStore.emit('save');
 	  }.bind(this),
 	  error: function(xhr, status, err) {
 	    console.error(URL, status, err.toString());
@@ -70,9 +68,8 @@ function remove(removeId) {
 	  dataType: 'json',
 	  contentType:"application/json; charset=utf-8",
 	  type: 'DELETE',
-	  async:false,
 	  success: function(data) {
-	    // TODO
+		 CMStore.emit('remove');
 	  }.bind(this),
 	  error: function(xhr, status, err) {
 	    console.error(URL, status, err.toString());
@@ -107,22 +104,8 @@ var CMStore = assign({}, EventEmitter.prototype, {
     return theResponse;
   },
 
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
-  },
-
-  /**
-   * @param {function} callback
-   */
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
+  off: function(event, callback) {
+    this.removeListener(event, callback);
   }
 });
 
@@ -135,23 +118,19 @@ AppDispatcher.register(function(action) {
       text = action.name.trim();
       if (text !== '') {
         create(action);
-        CMStore.emitChange();
       }
       break;
 
     case CMConstants.CM_EDIT:
       edit(action);
-      CMStore.emitChange();
       break;
 
     case CMConstants.CM_SAVE:
       save(action);
-      CMStore.emitChange();
       break;
 
     case CMConstants.CM_REMOVE:
       remove(action._id);
-      CMStore.emitChange();
       break;
 
     default:

@@ -2,7 +2,6 @@ var React = require('react');
 var CMActions = require('../actions/CMActions');
 
 var ContactModal = React.createClass({
-
 	render:function() {
 		return(
 			<div id="contact_modal" className="modal">
