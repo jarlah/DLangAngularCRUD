@@ -21,7 +21,7 @@ function create(newContact) {
 	  type: 'POST',
 	  data: JSON.stringify({contact: newContact}),
 	  success: function(data) {
-	    CMStore.emit('create');
+	    CMStore.emit('change');
 	  }.bind(this),
 	  error: function(xhr, status, err) {
 	    console.error(URL, status, err.toString());
@@ -53,7 +53,7 @@ function save(contact) {
 	  type: 'PUT',
 	  data: JSON.stringify({contact: contact}),
 	  success: function(data) {
-		 CMStore.emit('save');
+		 CMStore.emit('change');
 	  }.bind(this),
 	  error: function(xhr, status, err) {
 	    console.error(URL, status, err.toString());
@@ -69,7 +69,7 @@ function remove(removeId) {
 	  contentType:"application/json; charset=utf-8",
 	  type: 'DELETE',
 	  success: function(data) {
-		 CMStore.emit('remove');
+		 CMStore.emit('change');
 	  }.bind(this),
 	  error: function(xhr, status, err) {
 	    console.error(URL, status, err.toString());
